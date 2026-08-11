@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrinho — Concreto Skate Shop</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="cabecalho">
+    <nav class="container barra-nav">
+      <a href="index.html" class="logo">Concreto<span>Shop</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html" data-pagina="index.html">Início</a></li>
+        <li><a href="produtos.html" data-pagina="produtos.html">Catálogo</a></li>
+        <li><a href="admin.html" data-pagina="admin.html" data-link-admin style="display:none">Admin</a></li>
+        <li>
+          <a href="carrinho.html" data-pagina="carrinho.html" class="link-carrinho">
+            🛒 Carrinho
+            <span class="contador-carrinho" data-contador-carrinho style="display:none">0</span>
+          </a>
+        </li>
+        <li data-area-nao-logado style="display:flex; gap:16px;">
+          <a href="login.html" data-pagina="login.html">Entrar</a>
+        </li>
+        <li data-area-logado style="display:none; align-items:center; gap:16px;">
+          <span>Olá, <strong data-nome-usuario></strong></span>
+          <button data-botao-logout class="botao botao-secundario botao-pequeno" style="color:#fff;">Sair</button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="secao" style="padding-top:48px;">
+    <div class="container" style="max-width: 760px;">
+      <h2>Seu carrinho</h2>
+
+      <div id="lista-carrinho" style="margin-top:32px;">
+        <p>Carregando...</p>
+      </div>
+
+      <div id="area-total"></div>
+
+      <div id="mensagem-pedido" class="texto-suave" style="margin-top:16px;"></div>
+    </div>
+  </section>
+
+  <footer class="rodape">
+    <div class="container">
+      <p>© 2026 Concreto Skate Shop — projeto de exemplo para fins educacionais.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/carrinho.js"></script>
+</body>
+</html>

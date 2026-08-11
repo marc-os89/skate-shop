@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Concreto Skate Shop</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="cabecalho">
+    <nav class="container barra-nav">
+      <a href="index.html" class="logo">Concreto<span>Shop</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html" data-pagina="index.html">Início</a></li>
+        <li><a href="produtos.html" data-pagina="produtos.html">Catálogo</a></li>
+        <li><a href="admin.html" data-pagina="admin.html" data-link-admin style="display:none">Admin</a></li>
+        <li>
+          <a href="carrinho.html" data-pagina="carrinho.html" class="link-carrinho">
+            🛒 Carrinho
+            <span class="contador-carrinho" data-contador-carrinho style="display:none">0</span>
+          </a>
+        </li>
+        <li data-area-nao-logado style="display:flex; gap:16px;">
+          <a href="login.html" data-pagina="login.html">Entrar</a>
+        </li>
+        <li data-area-logado style="display:none; align-items:center; gap:16px;">
+          <span>Olá, <strong data-nome-usuario></strong></span>
+          <button data-botao-logout class="botao botao-secundario botao-pequeno" style="color:#fff;">Sair</button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="secao" style="padding-top:48px;">
+    <div class="container">
+
+      <!-- Mostrado apenas se o usuário NÃO for admin -->
+      <div id="bloqueio-admin" style="display:none;" class="estado-vazio">
+        <h3>Acesso restrito</h3>
+        <p>Você precisa estar logado como administrador para ver esta página.</p>
+        <a href="login.html" class="botao botao-primario" style="margin-top:16px;">Ir para login</a>
+      </div>
+
+      <!-- Conteúdo do painel, mostrado só depois de confirmar que é admin -->
+      <div id="painel-admin" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; flex-wrap:wrap; gap:16px;">
+          <h2>Painel administrativo</h2>
+          <button class="botao botao-primario" id="btn-novo-produto">+ Novo produto</button>
+        </div>
+
+        <table class="tabela-admin">
+          <thead>
+            <tr>
+              <th>Ícone</th>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Preço</th>
+              <th>Estoque</th>
+              <th>Destaque</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela-produtos"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MODAL DE PRODUTO (criar/editar) ===================== -->
+  <div id="modal-produto" style="display:none; position:fixed; inset:0; background:rgba(20,21,26,0.6); align-items:center; justify-content:center; z-index:100;">
+    <form class="formulario" id="form-produto" style="max-width:480px; width:90%; max-height:90vh; overflow:auto;">
+      <h3 id="titulo-modal" style="margin-bottom:20px;">Novo produto</h3>
+      <input type="hidden" id="produto-id" />
+
+      <div class="campo">
+        <label for="produto-nome">Nome</label>
+        <input type="text" id="produto-nome" required />
+      </div>
+      <div class="campo">
+        <label for="produto-descricao">Descrição</label>
+        <textarea id="produto-descricao" rows="3" required></textarea>
+      </div>
+      <div class="campo">
+        <label for="produto-preco">Preço (R$)</label>
+        <input type="number" id="produto-preco" step="0.01" min="0" required />
+      </div>
+      <div class="campo">
+        <label for="produto-categoria">Categoria</label>
+        <select id="produto-categoria">
+          <option value="equipamento">Equipamento</option>
+          <option value="roupa">Roupa</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="produto-estoque">Estoque</label>
+        <input type="number" id="produto-estoque" min="0" required />
+      </div>
+      <div class="campo">
+        <label for="produto-icone">Ícone (emoji)</label>
+        <input type="text" id="produto-icone" maxlength="4" required />
+      </div>
+      <div class="campo">
+        <label for="produto-cor">Cor de destaque</label>
+        <input type="color" id="produto-cor" value="#ff5a1f" />
+      </div>
+      <div class="campo" style="flex-direction:row; align-items:center; gap:8px;">
+        <input type="checkbox" id="produto-destaque" style="width:auto;" />
+        <label for="produto-destaque" style="margin:0;">Mostrar na página inicial</label>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:12px;">
+        <button type="button" class="botao botao-secundario botao-bloco" id="btn-cancelar-modal">Cancelar</button>
+        <button type="submit" class="botao botao-primario botao-bloco">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <footer class="rodape">
+    <div class="container">
+      <p>© 2026 Concreto Skate Shop — projeto de exemplo para fins educacionais.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

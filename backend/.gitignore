@@ -1,0 +1,4 @@
+skateshop.db
+__pycache__/
+*.pyc
+.vscode/

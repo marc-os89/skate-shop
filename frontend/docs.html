@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Docs — Concreto Skate Shop</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <style>
+    body { margin: 0; background: #fafafa; }
+    .topbar { display: none !important; } /* esconde a barra padrão do Swagger (feia/redundante aqui) */
+    .faixa-voltar {
+      background: #14151a;
+      color: #fff;
+      padding: 14px 24px;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faixa-voltar a { color: #d4ff3d; text-decoration: none; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="faixa-voltar">
+    <strong>Concreto Skate Shop — Documentação da API</strong>
+    <a href="index.html">← Voltar ao site</a>
+  </div>
+
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        url: "openapi.yaml",   // arquivo servido pelo próprio server.py (static file)
+        dom_id: "#swagger-ui",
+        presets: [SwaggerUIBundle.presets.apis],
+        layout: "BaseLayout",
+        // "include_credentials" garante que o cookie de sessão (token_sessao)
+        // seja enviado quando você testar endpoints protegidos pelo "Try it out"
+        requestInterceptor: (req) => {
+          req.credentials = "include";
+          return req;
+        },
+      });
+    };
+  </script>
+</body>
+</html>

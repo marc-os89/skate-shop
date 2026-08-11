@@ -1,0 +1,301 @@
+openapi: 3.0.3
+info:
+  title: Concreto Skate Shop — API
+  description: >
+    API do projeto de exemplo (System Development). Backend em Python puro
+    (http.server), sem framework. Autenticação via cookie de sessão
+    (token_sessao) — use "Try it out" no Swagger com o navegador na mesma
+    aba onde o site está logado para os endpoints protegidos funcionarem.
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:8000
+    description: Servidor local
+
+tags:
+  - name: Produtos
+  - name: Autenticação
+  - name: Carrinho
+  - name: Pedido
+
+paths:
+  /api/produtos:
+    get:
+      tags: [Produtos]
+      summary: Lista produtos (com filtros opcionais)
+      parameters:
+        - name: categoria
+          in: query
+          schema: { type: string, enum: [roupa, equipamento] }
+        - name: busca
+          in: query
+          schema: { type: string }
+          description: Busca por texto no nome ou descrição
+        - name: destaque
+          in: query
+          schema: { type: string, enum: ["1"] }
+          description: Se "1", retorna só produtos marcados como destaque
+      responses:
+        "200":
+          description: Lista de produtos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  produtos:
+                    type: array
+                    items: { $ref: "#/components/schemas/Produto" }
+    post:
+      tags: [Produtos]
+      summary: Cria um novo produto (requer login como admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProdutoEntrada" }
+      responses:
+        "201":
+          description: Produto criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+        "403":
+          description: Usuário não é administrador
+
+  /api/produtos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer }
+    get:
+      tags: [Produtos]
+      summary: Detalhe de um produto
+      responses:
+        "200":
+          description: Produto encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  produto: { $ref: "#/components/schemas/Produto" }
+        "404":
+          description: Produto não encontrado
+    put:
+      tags: [Produtos]
+      summary: Atualiza um produto (requer login como admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProdutoEntrada" }
+      responses:
+        "200":
+          description: Atualizado com sucesso
+        "403":
+          description: Usuário não é administrador
+        "404":
+          description: Produto não encontrado
+    delete:
+      tags: [Produtos]
+      summary: Remove um produto (requer login como admin)
+      responses:
+        "200":
+          description: Removido com sucesso
+        "403":
+          description: Usuário não é administrador
+
+  /api/auth/cadastro:
+    post:
+      tags: [Autenticação]
+      summary: Cria uma conta de cliente e já efetua login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, email, senha]
+              properties:
+                nome: { type: string }
+                email: { type: string, format: email }
+                senha: { type: string, format: password }
+      responses:
+        "201":
+          description: Conta criada
+        "409":
+          description: Já existe conta com esse email
+
+  /api/auth/login:
+    post:
+      tags: [Autenticação]
+      summary: Autentica e inicia sessão (cookie)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, senha]
+              properties:
+                email: { type: string, format: email }
+                senha: { type: string, format: password }
+      responses:
+        "200":
+          description: Login efetuado
+        "401":
+          description: Email ou senha inválidos
+
+  /api/auth/logout:
+    post:
+      tags: [Autenticação]
+      summary: Encerra a sessão atual
+      responses:
+        "200":
+          description: Logout efetuado
+
+  /api/auth/eu:
+    get:
+      tags: [Autenticação]
+      summary: Retorna o usuário da sessão atual (ou null se não logado)
+      responses:
+        "200":
+          description: Estado da sessão
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  usuario:
+                    nullable: true
+                    $ref: "#/components/schemas/Usuario"
+
+  /api/carrinho:
+    get:
+      tags: [Carrinho]
+      summary: Lista os itens do carrinho da sessão atual
+      responses:
+        "200":
+          description: Itens do carrinho
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  itens:
+                    type: array
+                    items: { $ref: "#/components/schemas/ItemCarrinho" }
+                  total: { type: number, format: float }
+    post:
+      tags: [Carrinho]
+      summary: Adiciona um produto ao carrinho
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [produto_id]
+              properties:
+                produto_id: { type: integer }
+                quantidade: { type: integer, default: 1 }
+      responses:
+        "201":
+          description: Adicionado com sucesso
+        "404":
+          description: Produto não encontrado
+
+  /api/carrinho/{produto_id}:
+    parameters:
+      - name: produto_id
+        in: path
+        required: true
+        schema: { type: integer }
+    put:
+      tags: [Carrinho]
+      summary: Atualiza a quantidade de um item (0 ou menos remove o item)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantidade: { type: integer }
+      responses:
+        "200":
+          description: Atualizado
+    delete:
+      tags: [Carrinho]
+      summary: Remove um item do carrinho
+      responses:
+        "200":
+          description: Removido
+
+  /api/pedido:
+    post:
+      tags: [Pedido]
+      summary: Finaliza o pedido (checkout) com os itens do carrinho atual
+      responses:
+        "201":
+          description: Pedido criado, carrinho esvaziado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pedido_id: { type: integer }
+                  total: { type: number, format: float }
+        "400":
+          description: Carrinho vazio
+
+components:
+  schemas:
+    Produto:
+      type: object
+      properties:
+        id: { type: integer }
+        nome: { type: string }
+        descricao: { type: string }
+        preco: { type: number, format: float }
+        categoria: { type: string, enum: [roupa, equipamento] }
+        estoque: { type: integer }
+        icone: { type: string, description: "Emoji usado como imagem do produto" }
+        cor: { type: string, description: "Cor de destaque em hex" }
+        destaque: { type: integer, enum: [0, 1] }
+
+    ProdutoEntrada:
+      type: object
+      required: [nome, descricao, preco, categoria, estoque, icone, cor]
+      properties:
+        nome: { type: string }
+        descricao: { type: string }
+        preco: { type: number, format: float }
+        categoria: { type: string, enum: [roupa, equipamento] }
+        estoque: { type: integer }
+        icone: { type: string }
+        cor: { type: string }
+        destaque: { type: integer, enum: [0, 1], default: 0 }
+
+    Usuario:
+      type: object
+      properties:
+        id: { type: integer }
+        nome: { type: string }
+        email: { type: string }
+        papel: { type: string, enum: [cliente, admin] }
+
+    ItemCarrinho:
+      type: object
+      properties:
+        produto_id: { type: integer }
+        quantidade: { type: integer }
+        nome: { type: string }
+        preco: { type: number, format: float }
+        icone: { type: string }
+        cor: { type: string }
